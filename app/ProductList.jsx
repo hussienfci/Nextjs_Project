@@ -13,7 +13,7 @@ function ProductList({prod}) {
 // }
       
   return (
-    <div>
+    <div className='w-auto '>
 
 
         <section>
@@ -27,10 +27,10 @@ function ProductList({prod}) {
               </p>
             </header>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
              
               {prod.map((i) => (
-                    <ProductItem key={i.id} item={i}/>
+                              <ProductItem key={i.id} item={i}/>
                   ))}
 
              

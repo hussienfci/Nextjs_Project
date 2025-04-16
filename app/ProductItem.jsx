@@ -1,50 +1,66 @@
 
 
-import React, { useReducer } from 'react'
+import React, { useContext, useState } from 'react'
 import { FaRegHeart } from "react-icons/fa";
+import { FcLike } from "react-icons/fc";
+import {productContext, ProductContext} from "@/context/ProductContext"
 
 
+// [cart , setCart , wished , setWished]
 function ProductItem({item}) {
-    let isWished = false ; 
+    
+    const [isWished , setIsWished] = useState(false) ;  
+    const [inCart , setInCart] = useState(false) ; 
+    const {cart  , setCart , wished , setWished} = useContext(productContext) ; 
+    // let cart = useContext(cartContext) ;
+    // let wishList = useContext(wishListContext)
 
-    function IncrementQuant(counter){
-        counter = min((counter + 1), item.stock); 
-
+    function _wished(item){
+        setWished(true) ; 
+        wished.push(item) ;
+        console.log(wishList) ;     
     }
-    function decrementQuant(counter){
-        counter = (counter - 1) && 0 ; 
 
-    }
-    function addToChart() {
-        // let quantityCounter = 1 ; 
-        // document.querySelector('.addtoChart').innerHTML = `
-        // <div>
-        //         <button onClick = ${IncrementQuant(quantityCounter)}>+</button>
-        //         <span>${quantityCounter}</span>
-        //         <button onClick=${decrementQuant(quantityCounter)}>-</button>
-                
+    let quantityCounter = 1 ; 
+    
+    function IncrementQuant(id){
         
+        let targetItemDiv = document.getElementById(id)  ;
+        quantityCounter = Math.min((quantityCounter + 1), item.stock); 
+        targetItemDiv.querySelector(".quantity").value = quantityCounter ; 
+
+
         
-        // </div>` ;
-        console.log('addtochart') ; 
     }
-
-    // const [state , dispatch] = useReducer(reducer , ItemCount) ; 
-
-    // function reducer(state , action ){
-    //     if(action.type === 'increment'){
-
-    //     }
-    // }
+    function decrementQuant(id){
+        quantityCounter = Math.max((quantityCounter - 1) , 0) ; 
+        let targetItemDiv = document.getElementById(id)  ;
+        targetItemDiv.querySelector(".quantity").value = quantityCounter ; 
+    }   
+    function addToChart(item) {
+        setInCart(true) ; 
+        // console.log(item) ;
+        // console.log(cart) ;
+        setCart(item) ; 
+        // cart[(+item.id) - 1 ] = item ; 
+        // let targetItemDiv = document.getElementById(item.id)  ;
+        // targetItemDiv.querySelector('.unselected').className = `hidden` ;
+        // targetItemDiv.querySelector('.Selected').className = 'Selected rounded-2xl border border-solid border-teal-500 mt-2 flex items-center gap-1' ;
+    }
+    
 
   return (
-    <div>
-                <div className="group relative block overflow-hidden border border-solid border-black m-8 rounded-2xl">
-                    <button onClick={()=> document.querySelector('.wishlist').style.color  = "red"}
+    <div id={item.id}>
+                <div className="group relative block overflow-hidden border border-solid border-teal-500 m-8 rounded-2xl">
+                    <button 
                         className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75"
+                        onClick={()=>_wished(item)}
                     >
-                        <span className="wishlist sr-only">Wishlist</span>
-                        <FaRegHeart />
+                        <span className="sr-only">Wishlist</span>
+                        { !isWished?
+                            <span className='notWishbutton'><FaRegHeart /></span> :
+                            <span className='Wished'><FcLike/></span>
+                        }
 
                     </button>
 
@@ -54,7 +70,7 @@ function ProductItem({item}) {
                         className="h-64 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-72"
                     />
 
-                    <div className="relative border border-t-black bg-white p-6">
+                    <div className="relative border border-t-teal-500 bg-white p-6">
                         <p className="text-gray-700">
                         ${item.price}  <br />
                         <span className="text-gray-400 line-through">${(item.price / (item.discountPercentage? item.discountPercentage * 0.01: 1 )).toFixed(2)}</span>
@@ -65,22 +81,100 @@ function ProductItem({item}) {
                         <p className="mt-1.5 line-clamp-3 text-gray-700">{item.description}
                         </p>
 
-                        <div className='addtoChart'>
-                            <form className=" mt-4 flex gap-4 ">
-                            <button
-                                className="block w-full rounded-sm bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
-                                onClick={addToChart}
-                            >
-                                Add to Cart
-                            </button>
 
-                            <button
-                                type="button"
-                                className="block w-full rounded-sm bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
-                            >
+ 
+              
+                        <div className='addtoCart text-[#102C57]'>
+                          {
+                            !inCart? 
+                            <div className="unselected mt-4 flex gap-4 text-[#102C57]">
+                                <button
+                                    className="block w-full rounded-sm bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
+                                    onClick={()=> addToChart(item)}
+                                >
+                                    Add to Cart
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className=" block w-full rounded-sm bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
+                                >
                                 Buy Now
-                            </button>
-                            </form>
+                                </button>
+                             </div>             :
+
+                            <div className="Selected hidden items-center gap-1">
+                                <label htmlFor="Quantity" className="sr-only"> Quantity </label>
+                                <button 
+                                type="button"
+                                onClick={()=> decrementQuant(item.id)}
+                                className="size-10 text-4xl text-teal-500 ml-10 mr-7  mb-9 leading-10 text-amber-50 transition hover:opacity-75">
+                                _
+                                </button>
+
+
+                                <input
+                                    type="number"
+                                    id="Quantity"
+                                    value="1"
+                                    // onChange={(e)=> {e.target.value = quantityCounter}}
+                                    className="quantity h-10 w-16 rounded-sm border-gray-200 text-center [-moz-appearance:_textfield] sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                                    />
+
+                                <button
+                                type="button"
+                                onClick={()=>IncrementQuant(item.id)}
+                                className="size-10 leading-10 text-4xl ml-5  text-teal-500 transition hover:opacity-75">
+                                +
+                                </button>
+                            </div>
+                    
+                          }
+                          
+                                {/* <div className="unselected mt-4 flex gap-4 text-[#102C57]">
+                                    <button
+                                        className="block w-full rounded-sm bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
+                                        onClick={()=> addToChart(item)}
+                                    >
+                                        Add to Cart
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className=" block w-full rounded-sm bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
+                                    >
+                                        Buy Now
+                                    </button>
+                                </div>
+                            
+                            
+
+                                <div className="Selected hidden items-center gap-1">
+                                    <label htmlFor="Quantity" className="sr-only"> Quantity </label>
+                                    <button 
+                                    type="button"
+                                    onClick={()=> decrementQuant(item.id)}
+                                    className="size-10 text-4xl text-teal-500 ml-10 mr-7  mb-9 leading-10 text-amber-50 transition hover:opacity-75">
+                                    _
+                                    </button>
+
+
+                                    <input
+                                        type="number"
+                                        id="Quantity"
+                                        value="1"
+                                        // onChange={(e)=> {e.target.value = quantityCounter}}
+                                        className="quantity h-10 w-16 rounded-sm border-gray-200 text-center [-moz-appearance:_textfield] sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                                        />
+
+                                    <button
+                                    type="button"
+                                    onClick={()=>IncrementQuant(item.id)}
+                                    className="size-10 leading-10 text-4xl ml-5  text-teal-500 transition hover:opacity-75">
+                                    +
+                                    </button>
+                               </div> */}
+                            
                         </div>
                     </div>
                 </div>  

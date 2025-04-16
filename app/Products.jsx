@@ -26,7 +26,7 @@ function Products() {
 
   return (
     <div className='bg-amber-50'>
-        <ProductList prod={products.products}/>
+         <ProductList prod={products.products}/>
       
     </div>
   )
